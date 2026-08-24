@@ -1,47 +1,56 @@
 print("Intelligent Log Analyzer\n")
 
 file_path = "sample_logs/server.log"
-error_count = 0
-highest_count = 0
-mcerror_type = ""
-errors = {}
-
-errors["Example"] = 1
 
 
 
-try:
-    with open(file_path,"r") as file:
-        for line in file:
-            if "ERROR" in line:
-                error_count += 1
-                parts = line.split()
-                error_message = " ".join(parts[3:])
-                if error_message in errors:
-                    errors[error_message] += 1
-                else:
-                    errors[error_message] = 1
-            
-except FileNotFoundError:
-    print("The server log file was not found.")
+def analyze_log(file_path):
+    error_count = 0
+    errors = {}
 
-for error, count in errors.items():
-    if count > highest_count:
-        highest_count = count
-        mcerror_type = error
+    try:
+        with open(file_path,"r") as file:
+            for line in file:
+                if "ERROR" in line:
+                    error_count += 1
+                    parts = line.split()
+                    error_message = " ".join(parts[3:])
+                    if error_message in errors:
+                        errors[error_message] += 1
+                    else:
+                        errors[error_message] = 1
+                
+    except FileNotFoundError:
+        print("The server log file was not found.")
 
-most_common_errors = []
-for error, count in errors.items():
-    if count == highest_count:
-        most_common_errors.append(error)
+    return errors, error_count
 
 
+def find_most_common(errors):
+    most_common_errors = []
+    highest_count = 0
+
+    for error, count in errors.items():
+        if count > highest_count:
+            highest_count = count
+        
+    for error, count in errors.items():
+        if count == highest_count:
+            most_common_errors.append(error)
+
+    return most_common_errors, highest_count
+
+
+errors, error_count = analyze_log(file_path)
+most_common_errors, highest_count = find_most_common(errors)
 
 print(f"There were a total of {error_count} errors.\n")
 
 if len(most_common_errors) == 1:
-    print(f"The most common error was {most_common_errors} and it occurred {highest_count} times")
+    print(f"The most common error was {most_common_errors[0]} and it occurred {highest_count} times.")
 elif len(most_common_errors) > 1:
     print(f"These were the most common errors and they occurred {highest_count} times:")
     for mce_list in most_common_errors:
         print(f"{mce_list}")
+else:
+    print("There were no errors detected.")
