@@ -2,8 +2,6 @@ print("Intelligent Log Analyzer\n")
 
 file_path = "sample_logs/server.log"
 
-
-
 def analyze_log(file_path):
     error_count = 0
     errors = {}
